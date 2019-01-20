@@ -65,6 +65,42 @@ public class MovieListActivity extends AppCompatActivity {
 
     }
 
+    // get the list of currently playing movies from the API
+    private void getNowPlaying() {
+        // create the url
+        String url = API_BASE_URL + "/movie/now_playing";
+        // set the request parameters
+        RequestParams params = new RequestParams();
+        params.put(API_KEY_PARAM, API_KEY); // API key, always required
+        // execute get request which expects a JSON object response in return
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // load results into the movie list
+                try {
+                    JSONArray results = response.getJSONArray("results");
+                    // iterate through the result and create movie objects
+                    for (int i = 0; i < results.length(); i++) {
+                        //Movie movie = new Movie(results.getJSONObject(i));
+                        //movies.add(movie);
+                        // notify the adapter that a row was added
+                        //adapter.notifyItemInserted(movies.size() - 1);
+                    }
+                    Log.i(TAG, String.format("Loaded %s movies", results.length()));
+                } catch (JSONException e) {
+                    logError("Failed to parse now playing movies", e, true);
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                logError("Failed to get now playing movies", throwable, true);
+            }
+        });
+    }
+
+
     // get the configuration from the API
     private void getConfiguration() {
         // create the url
